@@ -57,6 +57,11 @@ io.sockets.on('connection', (socket) => {
         name: username,
         picture: 'random'
       })
+
+      io.emit('user_addition_sucess', true);
+    }else{
+      
+      io.emit('user_addition_sucess', false);
     }
     console.log(users)
     io.emit('users', users)
