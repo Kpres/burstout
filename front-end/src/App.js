@@ -24,7 +24,8 @@ class App extends Component {
     super(props)
     this.state = {
       username: null,
-      players: []
+      players: [],
+      added_sucess: false,
     }
     this.socket = io('http://localhost:5000')
     this.socket.on('connect', () => {
@@ -43,6 +44,15 @@ class App extends Component {
     this.setState({
       username: username
     })
+
+    this.socket.on('user_addition_sucess', (added) => {
+      this.setState({
+        added_sucess: added,
+      });
+      return added;
+    })
+
+    //return this.state.added;
   }
 
   render() {

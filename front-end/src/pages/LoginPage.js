@@ -35,10 +35,15 @@ class LoginPage extends Component {
   }
 
   handleClick = () => {
-    this.props.handleAddUser(this.state.username);
-    this.setState({
-      route_to_home: true,
-    });
+    //if the user was succesfully added, route to the waiting list
+    if(this.props.handleAddUser(this.state.username)){
+      this.setState({
+        route_to_home: true,
+      });
+    }else{
+      alert("Name Already Used Try Again");
+    }
+    
   }
     
 
