@@ -5,7 +5,6 @@ import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Input from '@material-ui/core/Input'
 import Button from '@material-ui/core/Button'
-import { Redirect } from "react-router";
 
 
 const styles = theme => ({
@@ -25,32 +24,30 @@ const styles = theme => ({
 class LoginPage extends Component {
   state = {
     username: '',
-    route_to_home: false,
   }
 
+  // Capture the username
   handleChange = event => {
     this.setState({
       username: event.target.value,
     })
   }
 
-  handleClick = () => {
-    //if the user was succesfully added, route to the waiting list
-    if(this.props.handleAddUser(this.state.username)){
-      this.setState({
-        route_to_home: true,
-      });
-    }else{
-      alert("Name Already Used Try Again");
-    }
-    
+  // When the START button is clicked try to
+  // add the user
+  handleClick = username => event => {
+    this.props.handleAddUser(username)
   }
-    
+
+  // Catch when the user presses enter
+  handleKeyDown = username => ev => {
+    if (ev.key === 'Enter') {
+      this.props.handleAddUser(username)
+      ev.preventDefault();
+    }
+  }
 
   render() {
-    if(this.state.route_to_home){
-      return <Redirect push to="/homepage" />;
-    }
     const { classes, handleAddUser } = this.props
     const { username } = this.state
     return (
@@ -67,22 +64,20 @@ class LoginPage extends Component {
             required
             fullWidth
           >
-            <InputLabel htmlFor="username">Username</InputLabel>
+            <InputLabel>Username</InputLabel>
             <Input
-              id="email"
-              name="email"
               autoFocus
               onChange={this.handleChange}
               value={this.state.username}
+              onKeyDown={this.handleKeyDown(username)}
             />
           </FormControl>
           <Button
-            type="submit"
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={this.handleClick}
+            onClick={this.handleClick(username)}
           >
             Start
           </Button>

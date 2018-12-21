@@ -41,7 +41,12 @@ const users = []
 const server = http.createServer(app)
 const io = socket(server)
 io.sockets.on('connection', (socket) => {
-  socket.on('userAdded', (username) => {
+  console.log(`Client connected: ${socket}`)
+
+  // Someone tried to login. If that user name
+  // hasn't been added, add them. Otherwise throw
+  // an alery
+  socket.on('addUser', (username) => {
     console.log(`Got user ${username}`)
     // Add the users and emit the new lists of
     // uses.
@@ -57,14 +62,14 @@ io.sockets.on('connection', (socket) => {
         name: username,
         picture: 'random'
       })
-
-      io.emit('user_addition_sucess', true);
-    }else{
-      
-      io.emit('user_addition_sucess', false);
+      socket.emit('userAdded', username);
+      io.emit('users', users)
+    } else {
+      io.emit('userAdded', false);
     }
-    console.log(users)
-    io.emit('users', users)
+  })
+  socket.on('adminStart', () => {
+    socket.broadcast.emit('start')
   })
 })
 
