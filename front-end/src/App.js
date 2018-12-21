@@ -52,7 +52,6 @@ class App extends Component {
       return added;
     })
 
-    //return this.state.added;
   }
 
   render() {
