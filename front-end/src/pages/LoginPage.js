@@ -5,6 +5,8 @@ import FormControl from '@material-ui/core/FormControl'
 import InputLabel from '@material-ui/core/InputLabel'
 import Input from '@material-ui/core/Input'
 import Button from '@material-ui/core/Button'
+import { Redirect } from "react-router";
+
 
 const styles = theme => ({
   paper: {
@@ -22,16 +24,28 @@ const styles = theme => ({
 
 class LoginPage extends Component {
   state = {
-    username: ''
+    username: '',
+    route_to_home: false,
   }
 
   handleChange = event => {
     this.setState({
-      username: event.target.value
+      username: event.target.value,
     })
   }
 
+  handleClick = () => {
+    this.props.handleAddUser(this.state.username);
+    this.setState({
+      route_to_home: true,
+    });
+  }
+    
+
   render() {
+    if(this.state.route_to_home){
+      return <Redirect push to="/homepage" />;
+    }
     const { classes, handleAddUser } = this.props
     const { username } = this.state
     return (
@@ -54,7 +68,7 @@ class LoginPage extends Component {
               name="email"
               autoFocus
               onChange={this.handleChange}
-              value={username}
+              value={this.state.username}
             />
           </FormControl>
           <Button
@@ -63,7 +77,7 @@ class LoginPage extends Component {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={handleAddUser(username)}
+            onClick={this.handleClick}
           >
             Start
           </Button>

@@ -4,7 +4,8 @@ import LoginPage from './pages/LoginPage'
 import HomePage from './pages/HomePage'
 import AdminPage from './pages/AdminPage'
 import io from 'socket.io-client'
-import { Route } from "react-router-dom"
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
 
 const styles = theme => ({
   "@global": {
@@ -36,7 +37,7 @@ class App extends Component {
     })
   }
 
-  handleAddUser = username => event => {
+  handleAddUser = username => {
     // Tell the server that a user was added
     this.socket.emit('userAdded', username)
     this.setState({
@@ -50,25 +51,34 @@ class App extends Component {
 
     return (
       <div className={classes.root}>
-        <Route
-          exact path="/"
-          render={username
-        ? <HomePage
-            players={players}
-            message={"Waiting for host"}
-          />
-        : <LoginPage
-            handleAddUser={this.handleAddUser}
-          />
-        }
-        />
-        <Route
-          exact path="/admin"
-          render={
-            (props) =>
-            <AdminPage/>
-          }
-        />
+        <Router>
+          <Switch>
+            <Route exact path = "/"
+              render={
+                (props) => <LoginPage
+                  handleAddUser = {this.handleAddUser}
+                />
+              }
+            />
+
+            <Route path="/homepage"
+              render={
+                (props) =>
+                <HomePage
+                  players = {players}
+                  message = {"Waiting for host"}
+                />
+              }
+            />
+
+            <Route path="/admin"
+              render={
+                (props) =>
+                <AdminPage/>
+              }
+            />
+          </Switch>
+        </Router>
       </div>
     )
   }
