@@ -43,7 +43,8 @@ const io = socket(server)
 let questionsModify
 let index
 io.sockets.on('connection', (socket) => {
-  console.log(`Client connected: ${socket}`)
+  console.log(`Client connected: ${socket.id}`)
+  var id = socket.id
 
   // Someone tried to login. If that user name
   // hasn't been added, add them. Otherwise throw
@@ -62,7 +63,9 @@ io.sockets.on('connection', (socket) => {
     if (!found) {
       users.push({
         name: username,
-        picture: 'random'
+        picture: 'random',
+        points: 0,
+        id: id
       })
       socket.emit('userAdded', username);
       io.emit('users', users)
@@ -89,6 +92,15 @@ io.sockets.on('connection', (socket) => {
     }
     // Update all other clients with the new set of answers
     socket.broadcast.emit('questionAnswered', answers)
+
+    // Update the points of the user with the
+    // matching socket id
+    for (var i=0; i<users.length; i++) {
+      if(users[i].id === id) {
+        users[i].points = users[i].points + answered.length
+      }
+    }
+    io.emit('users', users)
   })
 
 })
