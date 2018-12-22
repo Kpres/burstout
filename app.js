@@ -65,7 +65,7 @@ io.sockets.on('connection', (socket) => {
       socket.emit('userAdded', username);
       io.emit('users', users)
     } else {
-      io.emit('userAdded', false);
+      socket.emit('userAdded', false);
     }
   })
   socket.on('adminStart', () => {

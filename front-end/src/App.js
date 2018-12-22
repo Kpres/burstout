@@ -8,6 +8,7 @@ import io from 'socket.io-client'
 import {
   BrowserRouter as Router, Route, Switch, Redirect
 } from "react-router-dom";
+import EndPage from './pages/EndPage';
 
 const styles = theme => ({
   "@global": {
@@ -91,6 +92,8 @@ class App extends Component {
       this.startTime()
     }
 
+    console.log(players);
+
     return (
       <div className={classes.root}>
         <Router>
@@ -131,10 +134,18 @@ class App extends Component {
                   />
                 }
                 else {
-                  return <Redirect to="/" />
+                  return <Redirect to="/end" />
                 }
               }}
             />
+
+            <Route path="/end"
+              render={() => 
+              <EndPage
+                players = {players}
+              />
+            }>
+            </Route>
 
           </Switch>
         </Router>
