@@ -15,13 +15,11 @@ import {
 
 const styles = theme => ({
   root: {
-    width: '50%',
+    marginLeft: '30%',
+    marginRight: '30%',
     marginTop: theme.spacing.unit * 3,
     margin: 'auto',
     overflowX: 'auto',
-  },
-  table: {
-    minWidth: 700,
   },
   startButton: {
     marginLeft: "30%",
@@ -43,11 +41,30 @@ function handleClick(){
 }
 
 function SimpleTable({ classes, players}) {
-
-    
     for (var i = 0; i < players.length; i++){
-        rows.push(createData(players[i].name, 0));
+        rows.push(createData(players[i].name, players[i].points));
     }
+
+    if(players.length > 1){
+        var min = players[0].points;
+        var minPlayer = players[0].name;
+        var max = players[0].points;
+        var maxPlayer = players[0].name;
+
+        for(var i = 0; i< players.length; i++){
+            if(players[i].points > max){
+                max = players[i].points
+                maxPlayer = players[i].name
+            }if(players[i].points < min){
+                min = players[i].points
+                minPlayer = players[i].name
+            }
+        }
+    }
+
+    rows.push(createData("MVP: " + maxPlayer, max));
+    rows.push(createData("Biggest Loser: " + minPlayer, min))
+
 
     return (
         <div>
@@ -56,7 +73,7 @@ function SimpleTable({ classes, players}) {
                 <TableHead>
                 <TableRow>
                     <TableCell>Name</TableCell>
-                    <TableCell align="right">Points</TableCell>
+                    <TableCell align = 'right'>Points</TableCell>
                 </TableRow>
                 </TableHead>
                 <TableBody>
@@ -66,7 +83,7 @@ function SimpleTable({ classes, players}) {
                         <TableCell component="th" scope="row">
                         {row.name}
                         </TableCell>
-                        <TableCell align="right">{row.points}</TableCell>
+                        <TableCell align = 'right'>{row.points}</TableCell>
                     </TableRow>
                     );
                 })}
