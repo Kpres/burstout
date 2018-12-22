@@ -65,55 +65,28 @@ const styles = theme => ({
 class GamePage extends Component{
   constructor(props) {
     super(props)
-    console.log("Game starting")
+    console.log('Game starting')
     this.state = {
         points: 0,
-        answers: [
-          {
-            answer: "cat",
-            answered: false
-          },
-          {
-            answer: "dog",
-            answered: false
-          },          {
-            answer: "hamster",
-            answered: false
-          },          {
-            answer: "guinea pig",
-            answered: false
-          },
-          {
-            answer: "rabbit",
-            answered: false
-          },          {
-            answer: "rat",
-            answered: false
-          },
-          {
-            answer: "mouse",
-            answered: false
-          },
-          {
-            answer: "parrot",
-            answered: false
-          },
-          {
-            answer: "snake",
-            answered: false
-          },
-          {
-            answer: "tarantula",
-            answered: false
-          }
-        ],
-        currentQuestion: "Name 10 pets",
-        input: "",
+        input: '',
+        questionName: '',
+        answers: []
     }
     this.correct = new Audio('http://localhost:5000/correct.mp3')
     this.wrong = new Audio('http://localhost:5000/wrong.mp3')
     this.almostOver = new Audio('http://localhost:5000/almost_over.mp3')
     this.already_answered = new Audio('http://localhost:5000/already_answered.mp3')
+    this.props.socket.on('setQuestion', (question) => {
+      this.setState({
+        questionName: question.question,
+        answers: question.answers
+      })
+    })
+    this.props.socket.on('questionAnswered', (newAnswers) => {
+      this.setState({
+        answers: newAnswers
+      })
+    })
   }
 
   handleChange = (event) => {
@@ -123,29 +96,45 @@ class GamePage extends Component{
       this.setState((prevState) => {
         // Make a copy of the previous answers
         let newAnswers = prevState.answers.slice()
+
+        // Did the user get any correct?
         let isAnswer = this.checkMatch(value, prevState.answers)
+
+        // Loop through the correct answers
+        // This is beacuse a 3 word str can match multiple
+        // answers
         if (isAnswer.length > 0) {
           let index
           for (var i=0; i<isAnswer.length; i++) {
             index = isAnswer[i]
+            // If the answer has already been answered
+            // play a sound and null the text entry
             if (newAnswers[index].answered) {
               this.already_answered.play()
               return {input: ""}
             }
             newAnswers[index].answered = true
           }
+          // Otherwise play a correct answer sound,
+          // clear the input, display the answer(s), and
+          // update the points
           this.correct.play()
+          // Notify all other players of the answer
+          this.props.socket.emit('questionAnswered', isAnswer)
           return {
             answers: newAnswers,
             input: "",
             points: prevState.points + isAnswer.length
           }
         } else {
+          // If the input did not match an answer
+          // play an incorrect sound.
           this.wrong.play()
           return { input: "" }
         }
       })
     } else {
+      // If the string is less than 3 char
       this.setState({input: value})
     }
   }
@@ -162,11 +151,15 @@ class GamePage extends Component{
   }
 
   render() {
-    const { classes, seconds } = this.props
     const {
-      currentQuestion,
-      answers,
+      classes,
+      seconds,
+      question
+    } = this.props
+    const {
       points,
+      questionName,
+      answers
     } = this.state
 
     if (seconds === 6){
@@ -182,7 +175,7 @@ class GamePage extends Component{
               color="inherit"
               style={{flex: 1}}
             >
-              Q?: {currentQuestion}
+              Q?: {questionName}
             </Typography>
             <Typography variant="subtitle2" color="inherit">
               TIME: {seconds}

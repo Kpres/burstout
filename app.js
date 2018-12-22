@@ -7,6 +7,7 @@ const logger = require('morgan')
 const http = require('http')
 const socket = require('socket.io')
 const debug = require('debug')('burstout:server')
+const questions = require('./questions.js')
 
 
 var port = process.env.PORT || 5000
@@ -37,9 +38,10 @@ app.use((err, req, res, next) => {
 })
 
 const users = []
-
 const server = http.createServer(app)
 const io = socket(server)
+let questionsModify
+let index
 io.sockets.on('connection', (socket) => {
   console.log(`Client connected: ${socket}`)
 
@@ -65,12 +67,30 @@ io.sockets.on('connection', (socket) => {
       socket.emit('userAdded', username);
       io.emit('users', users)
     } else {
-      io.emit('userAdded', false);
+      socket.emit('userAdded', false);
     }
   })
   socket.on('adminStart', () => {
+    // Whenevner a game starts make a copy of all questions
+    questionsModify = JSON.parse(JSON.stringify(questions))
+    // Randomly select a question to use
+    index = Math.floor(Math.random() * Math.floor(questionsModify.length))
     socket.broadcast.emit('start')
+    socket.broadcast.emit('setQuestion', questionsModify[index])
+
   })
+  // Sends a list of indice of questions that have been
+  // corrected answered
+  socket.on('questionAnswered', (answered) => {
+    let answers = questionsModify[index].answers
+    // Mark the questions that have been answered
+    for (var i=0; i<answered.length; i++) {
+      answers[answered[i]].answered = true
+    }
+    // Update all other clients with the new set of answers
+    socket.broadcast.emit('questionAnswered', answers)
+  })
+
 })
 
 server.listen(port)
