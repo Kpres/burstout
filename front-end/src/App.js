@@ -30,6 +30,7 @@ class App extends Component {
       players: [],
       start: false,
       seconds: 30,
+      question: {}
     }
     this.timer = 0
     this.socket = io('http://localhost:5000')
@@ -52,7 +53,7 @@ class App extends Component {
     })
     this.socket.on('start', () => {
       this.setState({
-        start: true
+        start: true,
       })
     })
   }
@@ -86,7 +87,12 @@ class App extends Component {
 
   render() {
     const { classes } = this.props
-    const { username, players, start, seconds } = this.state
+    const {
+      username,
+      players,
+      start,
+      seconds,
+    } = this.state
 
     if (start) {
       this.startTime()
@@ -131,6 +137,7 @@ class App extends Component {
                 if (start && username) {
                   return <GamePage
                     seconds={seconds}
+                    socket={this.socket}
                   />
                 }
                 else {
