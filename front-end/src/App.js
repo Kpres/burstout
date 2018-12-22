@@ -29,7 +29,7 @@ class App extends Component {
       username: false,
       players: [],
       start: false,
-      seconds: 30,
+      seconds: 5,
       question: {}
     }
     this.timer = 0
@@ -147,10 +147,17 @@ class App extends Component {
             />
 
             <Route path="/end"
-              render={() => 
-              <EndPage
-                players = {players}
-              />
+              render={() => {
+                if(username && !start){
+                  return <EndPage
+                  players = {players}
+                />
+              }else{
+                return <Redirect to="/" />
+              }
+                  
+              }
+
             }>
             </Route>
 
