@@ -15,10 +15,9 @@ import {
 
 const styles = theme => ({
   root: {
-    marginLeft: '30%',
-    marginRight: '30%',
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit,
     marginTop: theme.spacing.unit * 3,
-    margin: 'auto',
     overflowX: 'auto',
   },
   startButton: {
@@ -36,13 +35,15 @@ function createData(name, points) {
 
 var rows = [];
 
-function handleClick(){
-    rows = [];
+const handleClick = handleReset => event => {
+  rows = []
+  handleReset(event)
 }
 
-function SimpleTable({ classes, players}) {
+
+function SimpleTable({ classes, players, handleReset}) {
     for (var i = 0; i < players.length; i++){
-        rows.push(createData(players[i].name, players[i].points));
+      rows.push(createData(players[i].name, players[i].points));
     }
 
     if(players.length > 1){
@@ -52,20 +53,18 @@ function SimpleTable({ classes, players}) {
         var maxPlayer = players[0].name;
 
         for(var i = 0; i< players.length; i++){
-            if(players[i].points > max){
+            if (players[i].points > max) {
                 max = players[i].points
                 maxPlayer = players[i].name
-            }if(players[i].points < min){
+            } if (players[i].points < min) {
                 min = players[i].points
                 minPlayer = players[i].name
             }
         }
+      rows.push(createData("MVP: " + maxPlayer, max));
+      rows.push(createData("Biggest Loser: " + minPlayer, min))
     }
-
-    rows.push(createData("MVP: " + maxPlayer, max));
-    rows.push(createData("Biggest Loser: " + minPlayer, min))
-
-
+    console.log(rows)
     return (
         <div>
             <Paper className={classes.root}>
@@ -92,19 +91,17 @@ function SimpleTable({ classes, players}) {
             </Paper>
 
             <div className={classes.startButton}>
-                
-                <Link to = "/">
-                    <Button
-                        variant="outlined"
-                        onClick = {handleClick}
-                        color="primary"
-                        size="large"
-                        style={{
-                            width: "100%"
-                        }}
-                    > HOME
-                    </Button>
-                </Link>
+              <Button
+                variant="outlined"
+                onClick={handleClick(handleReset)}
+                color="primary"
+                size="large"
+                style={{
+                    width: "100%"
+                }}
+              >
+                Home
+              </Button>
             </div>
         </div>
 

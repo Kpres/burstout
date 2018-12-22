@@ -18,13 +18,12 @@ app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(path.join(__dirname, 'front-end/build')))
-
 app.use(bodyParser.json({ type: 'application/json' }))
 
 // catch 404 and forward to error handler
-app.use((req, res, next) => {
-  next(createError(404))
-})
+// app.use((req, res, next) => {
+//   next(createError(404))
+// })
 
 // error handler
 app.use((err, req, res, next) => {
@@ -37,7 +36,11 @@ app.use((err, req, res, next) => {
   res.render('error')
 })
 
-const users = []
+app.get('*', function(req, res) {
+  res.sendFile(path.resolve(__dirname + '/front-end/build/index.html'));
+})
+
+let users = []
 const server = http.createServer(app)
 const io = socket(server)
 let questionsModify
@@ -101,6 +104,9 @@ io.sockets.on('connection', (socket) => {
       }
     }
     io.emit('users', users)
+  })
+  socket.on('reset', () => {
+    users = []
   })
 
 })

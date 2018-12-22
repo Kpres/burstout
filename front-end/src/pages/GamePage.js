@@ -72,10 +72,10 @@ class GamePage extends Component{
         questionName: '',
         answers: []
     }
-    this.correct = new Audio('http://localhost:5000/correct.mp3')
-    this.wrong = new Audio('http://localhost:5000/wrong.mp3')
-    this.almostOver = new Audio('http://localhost:5000/almost_over.mp3')
-    this.already_answered = new Audio('http://localhost:5000/already_answered.mp3')
+    this.correct = new Audio("https://burstout.herokuapp.com/correct.mp3")
+    this.wrong = new Audio("https://burstout.herokuapp.com/wrong.mp3")
+    this.almostOver = new Audio("https://burstout.herokuapp.com/almost_over.mp3")
+    this.already_answered = new Audio("https://burstout.herokuapp.com/already_answered.mp3")
     this.props.socket.on('setQuestion', (question) => {
       this.setState({
         questionName: question.question,

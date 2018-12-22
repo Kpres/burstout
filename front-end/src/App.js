@@ -29,11 +29,11 @@ class App extends Component {
       username: false,
       players: [],
       start: false,
-      seconds: 5,
+      seconds: 30,
       question: {}
     }
     this.timer = 0
-    this.socket = io('http://localhost:5000')
+    this.socket = io("https://burstout.herokuapp.com/")
     this.socket.on('connect', () => {
       console.log('client connected')
     })
@@ -85,6 +85,14 @@ class App extends Component {
     this.socket.emit('adminStart')
   }
 
+  handleReset = (event) => {
+    this.setState({
+      username: false,
+      players: []
+    })
+    this.socket.emit('reset')
+  }
+
   render() {
     const { classes } = this.props
     const {
@@ -97,9 +105,6 @@ class App extends Component {
     if (start) {
       this.startTime()
     }
-
-    console.log(players);
-
     return (
       <div className={classes.root}>
         <Router>
@@ -150,12 +155,13 @@ class App extends Component {
               render={() => {
                 if(username && !start){
                   return <EndPage
-                  players = {players}
-                />
-              }else{
+                            players={players}
+                            handleReset={this.handleReset}
+                  />
+              } else {
                 return <Redirect to="/" />
               }
-                  
+
               }
 
             }>
